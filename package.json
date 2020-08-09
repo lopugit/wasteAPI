@@ -16,6 +16,7 @@
     "fs": "0.0.1-security",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
+    "smarts": "^1.0.226",
     "uuid": "^8.3.0"
   }
 }

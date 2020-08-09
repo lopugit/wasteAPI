@@ -16,7 +16,7 @@ let uuid = require('uuid').v4
 let bodyParser = require('body-parser')
 let app = express()
 let config = require('config')
-
+let smarts = require('smarts')()
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -29,14 +29,14 @@ app.post('/info', async (req,res)=>{
 		
 		let reqID = uuid()
 		
-		console.log("New req", req)
+		console.log("New req", req, reqID)
 
 		if(req.body.attachments && req.body.attachments instanceof Array){
 
 			// Save attachments to request ID based local directory database
 			await asyncForEach(req.body.attachments, async attachment=>{
 				if(attachment.type == 'image'){
-					if(!(attachment.imageData.bin instanceof Buffer)){
+					if(!(smarts.getsmart(attachment, 'imageData.bin', undefined) instanceof Buffer)){
 						attachment.imageData.bin = new Buffer.from(attachment.imageData.bin.data)
 					}
 					let url = attachment.payload.url
@@ -76,6 +76,7 @@ console.log("Facebook Waste Management API started!")
 
 async function save(data, path){
 	try {
+		data.ext = (await FileType.fromBuffer(data.bin) || { ext: 'unknown' }).ext
 		fs.writeFileSync(path+"."+data.ext, data.bin)
 	} catch(err){
 		console.error("Something went wrong saveing the file from data")
