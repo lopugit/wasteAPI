@@ -17,6 +17,9 @@ let bodyParser = require('body-parser')
 let app = express()
 let config = require('config')
 let smarts = require('smarts')()
+
+let handleAttachments = require('functions/handleAttachments')
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -29,36 +32,10 @@ app.post('/info', async (req,res)=>{
 		
 		let reqID = uuid()
 		
-		console.log("New req", req, reqID)
+		console.log("New req", req.body, reqID)
 
 		if(req.body.attachments && req.body.attachments instanceof Array){
-
-			// Save attachments to request ID based local directory database
-			await asyncForEach(req.body.attachments, async attachment=>{
-				if(attachment.type == 'image'){
-					if(!(smarts.getsmart(attachment, 'imageData.bin', undefined) instanceof Buffer)){
-						attachment.imageData.bin = new Buffer.from(attachment.imageData.bin.data)
-					}
-					let url = attachment.payload.url
-					let dir = __dirname+"/../imageDB/"+reqID+"/"
-
-					// create directory for sender
-					if (!fs.existsSync(dir)){
-						fs.mkdirSync(dir)
-					}
-
-					// add filename uuid to attachment object
-					attachment.uuid = uuid()
-
-					// create path out of local directory + sender facebook ID
-					path = dir+attachment.uuid
-					
-					// download image to sender ID'd local folder DB
-					attachment.imageData = await save(attachment.imageData, path)
-
-				}
-			})
-
+			await handleAttachments(req, res)
 		}
 
 	} catch(err){
