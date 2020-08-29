@@ -1,10 +1,10 @@
 // Initialize
-console.log("Starting Facebook Waste Management API...")  
+console.log("Starting Facebook Waste Management API...")
 
 
 // so process never dies
 process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ', err);
+	console.log('Caught exception: ', err);
 });
 
 let express = require('express')
@@ -20,12 +20,12 @@ let smarts = require('smarts')()
 let handleAttachments = require('functions/handleAttachments')
 
 
-// create mongoDB connection
+// create mongoDB connection for querying
 let MongoClient = require('mongodb').MongoClient;
 let uri = config.uri
-let client = new MongoClient(uri, { 
-	useNewUrlParser: true, 
-	useUnifiedTopology: true 
+let client = new MongoClient(uri, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
 });
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -35,61 +35,76 @@ app.listen(config.port, () => console.log(`Facebook Waste Management API listeni
 
 app.get('/', (req, res) => res.send('Hello API World!'));
 
-app.post('/info', async (req,res)=>{
+
+app.post('/info', async (req, res) => {
+	let return_message = "No info right now but we're working on it!";
 	try {
 		let keywords_included = false;
-		var return_message = "No info right now but we're working on it!";
 		let reqID = uuid()
-		
+
 		console.log("New req", req.body, reqID)
 
-		if(req.body.attachments && req.body.attachments instanceof Array){
-			await handleAttachments(req, res)
-		}else if (typeof req.body.message == "string") {
+		if (req.body.attachments && req.body.attachments instanceof Array) {
+			await handleAttachments(req, res) // handles image attachments
+		} else if (typeof req.body.message == "string") {
+
 			keywords_included = true;
-			return_message = "Keyword input recieved: " + req.body.message;
 			console.log("Querying the database with the following keyword(s): " + req.body.message);
 
 			// connect to mongodb connection
-			/*
-			client.connect(async err => {
-				if(err) console.error(err)
-				
-				let db = client.db("wastee");
-				let items = db.collection("items")
+			await client.connect();
 
-				await asyncForEach(parsed, async item=>{
-					let found = await items.query(
-						// QUERY the db 
-						).catch(console.error)
-					console.log(found)
-				})
-				
-				
-				// close the connection
-				client.close();
-				*/
-			};
-		
+			let db = client.db("wastee");
+			let items = db.collection("items");
 
-	} catch(err){
+			// query: 
+			return_message = await items.aggregate([
+				{
+					$search: {
+						"text": {
+							"query": req.body.message,
+							"path": "name"
+						}
+					}
+				},
+				{
+					$limit: 2 // max number of items returned 
+				},
+				{
+					// return the advice and if it is recyclable
+					$project: {
+						"_id": 0,
+						"recyclable": 1,
+						"advice": 1
+					}
+				}
+			]).toArray()
+
+			console.log(return_message)
+			// close the connection
+			client.close();
+		}
+	} catch (err) {
 		console.error(err)
+		// sends error
+		res.status(500).send()
+		return
 	}
-	
+
 	res.status(200).send({
 		info: return_message
 	})
-	
+
 })
 
 // done initializing
 console.log("Facebook Waste Management API started!")
 
-async function save(data, path){
+async function save(data, path) {
 	try {
 		data.ext = (await FileType.fromBuffer(data.bin) || { ext: 'unknown' }).ext
-		fs.writeFileSync(path+"."+data.ext, data.bin)
-	} catch(err){
+		fs.writeFileSync(path + "." + data.ext, data.bin)
+	} catch (err) {
 		console.error("Something went wrong saveing the file from data")
 		console.error(err)
 	}
@@ -97,7 +112,7 @@ async function save(data, path){
 
 
 async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
+	for (let index = 0; index < array.length; index++) {
+		await callback(array[index], index, array);
+	}
 }
