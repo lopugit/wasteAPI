@@ -5,3 +5,5 @@
 imageDB/*
 api/node_modules/secret.js
 secrets.js
+
+package-lock.json
