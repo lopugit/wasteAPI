@@ -18,6 +18,7 @@ let config = require('config')
 let smarts = require('smarts')()
 
 let handleAttachments = require('functions/handleAttachments')
+let query = require('functions/query')
 
 
 // create mongoDB connection for querying
@@ -47,43 +48,12 @@ app.post('/info', async (req, res) => {
 		if (req.body.attachments && req.body.attachments instanceof Array) {
 			await handleAttachments(req, res) // handles image attachments
 		} else if (typeof req.body.message == "string") {
-
-			keywords_included = true;
-			console.log("Querying the database with the following keyword(s): " + req.body.message);
-
-			// connect to mongodb connection
-			await client.connect();
-
-			let db = client.db("wastee");
-			let items = db.collection("items");
-
-			// query: 
-			return_message = await items.aggregate([
-				{
-					$search: {
-						"text": {
-							"query": req.body.message,
-							"path": "name"
-						}
-					}
-				},
-				{
-					$limit: 2 // max number of items returned 
-				},
-				{
-					// return the advice and if it is recyclable
-					$project: {
-						"_id": 0,
-						"recyclable": 1,
-						"advice": 1
-					}
-				}
-			]).toArray()
-
-			console.log(return_message)
-			// close the connection
-			client.close();
+			let query_output = query(req, client) // queries the database with req.body.message
+			
+			if (!Array.isArray(query_output) || !query_output.length) { // checks if output array is empty
+				return_message = "No output after querying the database."
 		}
+	}
 	} catch (err) {
 		console.error(err)
 		// sends error
