@@ -4,12 +4,13 @@
   "description": "Waste Management API",
   "main": "api/index.js",
   "scripts": {
-		"start": "pm2 start ecosystem.config.js",
+    "start": "pm2 start ecosystem.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mathen",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/vision": "^2.1.1",
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
