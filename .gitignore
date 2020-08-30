@@ -3,5 +3,5 @@
 .DS_Store
 
 imageDB/*
-
+api/node_modules/secret.js
 secrets.js

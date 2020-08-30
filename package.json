@@ -16,6 +16,7 @@
     "express": "^4.17.1",
     "file-type": "^14.7.1",
     "fs": "0.0.1-security",
+    "mongodb": "^3.6.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "smarts": "^1.0.226",
