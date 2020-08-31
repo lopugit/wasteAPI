@@ -52,11 +52,7 @@ app.post('/info', async (req, res) => {
 		if (req.body.attachments && req.body.attachments instanceof Array) {
 			await handleAttachments(req, res) // handles image attachments
 		} else if (typeof req.body.message == "string") {
-			let query_output = query(req, client) // queries the database with req.body.message
-			
-			if (!Array.isArray(query_output) || !query_output.length) { // checks if output array is empty
-				return_message = "No output after querying the database."
-		}
+			await query(req, res, client) // queries the database with req.body.message
 	}
 	} catch (err) {
 		console.error(err)
