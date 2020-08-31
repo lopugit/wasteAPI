@@ -51,7 +51,7 @@ app.post('/info', async (req, res) => {
 
 		if (req.body.attachments && req.body.attachments instanceof Array) {
 			await handleAttachments(req, res) // handles image attachments
-		} else if (typeof req.body.message == "string") {
+		} else if (req.body.message){//(typeof req.body.message == "string") {
 			await query(req, res, client) // queries the database with req.body.message
 	}
 	} catch (err) {
