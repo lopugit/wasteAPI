@@ -18,6 +18,7 @@ client.connect(err => {
   // creating indexes for name and aliases
   items.createIndex({ name: 1 });
   items.createIndex({ aliases: 1 });
+	
   console.log("Indexes created")
 });
 
