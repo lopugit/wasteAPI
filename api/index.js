@@ -13,19 +13,24 @@ let bodyParser = require('body-parser')
 let app = express()
 let config = require('config')
 
+
 let handleAttachments = require('functions/handleAttachments')
 let query = require('functions/query')
 
 
 // create mongoDB connection for querying
 let MongoClient = require('mongodb').MongoClient;
+
 let uri = config.uri
+
 let client = new MongoClient(uri, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true
 });
 
-app.use(bodyParser.urlencoded({ limit: '100mb', extended: false }));
+client.connect();
+
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(bodyParser.json({ limit: '100mb'}));
 
 app.listen(config.port, () => console.log(`Facebook Waste Management API listening on ${config.port}!`));
@@ -59,10 +64,12 @@ app.post('/info', async (req, res) => {
 		res.status(500).send()
 		return
 	}
-
-	res.status(200).send({
-		info: return_message
-	})
+	
+	if(!res._headerSent){
+		res.status(200).send({
+			info: return_message
+		})
+	}
 
 })
 
