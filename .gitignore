@@ -7,3 +7,5 @@ api/node_modules/secret.js
 secrets.js
 
 package-lock.json
+
+googleCredentials.json
