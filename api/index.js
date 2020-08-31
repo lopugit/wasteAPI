@@ -28,6 +28,8 @@ let client = new MongoClient(uri, {
 	useUnifiedTopology: true
 });
 
+global.client = client
+
 client.connect();
 
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
