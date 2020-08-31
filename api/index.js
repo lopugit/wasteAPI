@@ -45,20 +45,25 @@ app.post('/info', async (req, res) => {
 		
 		req.uuid = uuid()
 		
-		let keywords_included = false;
-
 		console.log("new request, req:", req.body, req.uuid)
 
 		if (req.body.attachments && req.body.attachments instanceof Array) {
 			await handleAttachments(req, res) // handles image attachments
-		} else if (typeof req.body.message == "string") {
-			await query(req, res, client) // queries the database with req.body.message
-	}
+		} 
+
+		let info = await query(req, res, client) // queries the database with req.body.message	
+			
+		res.status(200).send({
+			info
+		})
+			
+
 	} catch (err) {
-		console.error(err)
-		// sends error
-		res.status(500).send()
-		return
+		if(!res._headerSent){
+			console.error("err: ", err)
+			// sends error
+			res.status(500).send()
+		}
 	}
 	
 	if(!res._headerSent){
