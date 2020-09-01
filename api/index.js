@@ -46,18 +46,17 @@ app.post('/info', async (req, res) => {
 	try {
 		
 		req.uuid = uuid()
-		
+		res.response = {}
+
 		console.log("new request, req:", req.body, req.uuid)
 
 		if (req.body.attachments && req.body.attachments instanceof Array) {
 			await handleAttachments(req, res) // handles image attachments
 		} 
 
-		let info = await query(req, res) // queries the database with req.body.message	
-		console.log(info)
-		res.status(200).send({
-			info
-		})
+		await query(req, res) // queries the database with req.body.message	
+		
+		res.status(200).send(res.response)
 			
 
 	} catch (err) {
