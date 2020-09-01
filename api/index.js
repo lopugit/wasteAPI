@@ -53,8 +53,8 @@ app.post('/info', async (req, res) => {
 			await handleAttachments(req, res) // handles image attachments
 		} 
 
-		let info = await query(req, res, client) // queries the database with req.body.message	
-			
+		let info = await query(req, res) // queries the database with req.body.message	
+		console.log(info)
 		res.status(200).send({
 			info
 		})
