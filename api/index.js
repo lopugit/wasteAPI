@@ -48,7 +48,7 @@ app.post('/info', async (req, res) => {
 		req.uuid = uuid()
 		res.response = {}
 
-		console.log("new request, req:", req.body, req.uuid)
+		console.log("new request, req: ", req.uuid)
 
 		if (req.body.attachments && req.body.attachments instanceof Array) {
 			await handleAttachments(req, res) // handles image attachments
