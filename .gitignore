@@ -3,7 +3,10 @@
 .DS_Store
 
 imageDB/*
-api/node_modules/secret.js
+
+!imageDB/.gitkeep 
+
+api/node_modules/secrets.js
 secrets.js
 
 package-lock.json
