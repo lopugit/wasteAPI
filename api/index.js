@@ -15,7 +15,7 @@ let config = require('config')
 
 
 let handleAttachments = require('functions/handleAttachments')
-let query = require('functions/query')
+let query = require('functions/handleText')
 
 
 // create mongoDB connection for querying
