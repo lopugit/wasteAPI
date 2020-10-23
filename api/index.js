@@ -1,3 +1,4 @@
+
 /**
  * @Description This is the entry point file for the Wastee Recycling Information API
  * This API waits for HTTP POST requests on the /info endpoint and accepts
@@ -18,6 +19,7 @@ process.on('uncaughtException', function (err) {
 
 // import external packages
 let express = require('express')
+let smarts = require('smarts')()
 let uuid = require('uuid').v4
 let bodyParser = require('body-parser')
 let app = express()
@@ -67,7 +69,7 @@ app.post('/info', async (req, res) => {
 	 */
 	
 	// predefine reply so reply object can simply be modified down the line
-	let return_message = "No info right now but we're working on it!";
+	let returnMessage = "No info right now but we're working on it!";
 	
 	// wrap in try so API doesn't crash on error
 	try {
@@ -83,7 +85,7 @@ app.post('/info', async (req, res) => {
 
 		// if the request body contains images, pass the req and res objects 
 		// to the appropriate modularised functions
-		if (req.body.attachments && req.body.attachments instanceof Array) {
+		if (smarts.getsmart(req, 'body.attachments', undefined) instanceof Array) {
 			
 			// handle image attachments
 			await handleAttachments(req, res) 
@@ -112,7 +114,7 @@ app.post('/info', async (req, res) => {
 	// with an error message
 	if(!res._headerSent){
 		res.status(200).send({
-			info: return_message
+			info: returnMessage
 		})
 	}
 
