@@ -83,7 +83,7 @@ app.post('/info', async (req, res) => {
 		// log the request uuid
 		console.log("new request, req.uuid: ", req.uuid)
 
-		// if the request body contains images, pass the req and res objects 
+		// if the request body contains images, pass the req and res objects
 		// to the appropriate modularised functions
 		if (smarts.getsmart(req, 'body.attachments', undefined) instanceof Array) {
 			
